@@ -7,15 +7,24 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import  { AddProject, Project, Projects } from "./screens";
 import { ApolloProvider } from "@apollo/client";
 import { client } from "./services";
+import { BACKGROUND_COLOR_DARK, INTERACTION_COLOR } from "./styles/index";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const ProjectNavigator = () => {
   return (
-    <Stack.Navigator>
-      <Stack.Screen name="Projects" component={Projects} />
-      <Stack.Screen name="Project" component={Project} />
+    <Stack.Navigator screenOptions={{ headerTitleAlign: "center" }}>
+      <Stack.Screen
+        name="Projects"
+        component={Projects}
+        options={{ title: "Projects list" }}
+      />
+      <Stack.Screen
+        name="Project"
+        component={Project}
+        options={{ title: "Project Details" }}
+      />
     </Stack.Navigator>
   );
 };
@@ -32,14 +41,18 @@ const App = () => {
                   return (
                     <FontAwesome
                       name="th-list"
-                      color={focused ? "red" : "blue"}
+                      color={
+                        focused ? INTERACTION_COLOR : BACKGROUND_COLOR_DARK
+                      }
                     />
                   );
                 else if (route.name === "AddProject")
                   return (
-                    <FontAwesome 
-                      name="plus" 
-                      color={focused ? "red" : "blue"} 
+                    <FontAwesome
+                      name="plus"
+                      color={
+                        focused ? INTERACTION_COLOR : BACKGROUND_COLOR_DARK
+                      }
                     />
                   );
               },
