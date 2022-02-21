@@ -1,6 +1,6 @@
-export interface CreateProjectInfos {
+export interface ProjectInput {
     name: string,
-    description?: string
+    description?: string,
 };
 
 export interface Project {

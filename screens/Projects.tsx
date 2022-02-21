@@ -26,7 +26,7 @@ export const Projects = ({ navigation }: any) => {
     },
   ];
   const { data, loading, error } = useQuery(GET_PROJECTS_QUERY);
-
+  if (data) console.log(data);
   return (
     <>
       <View
@@ -41,6 +41,13 @@ export const Projects = ({ navigation }: any) => {
       >
         {loading && <Text>Loading</Text>}
         {error && <Text>{error?.message}</Text>}
+        {data &&
+          <FlatList
+            data={data.findManyProjects}
+            keyExtractor={(item: any) => item.id}
+            renderItem={({ item }: any) => (<Text>{item.id}</Text>)}
+          />
+        }
         <FlatList
           contentContainerStyle={{ flex: 1, justifyContent: "space-around" }}
           data={mockProjects}
@@ -65,15 +72,3 @@ export const Projects = ({ navigation }: any) => {
     </>
   );
 };
-
-/* 
-gql`
-query Query {
-  findManyProjects {
-    id
-    name
-    description
-  }
-}
-`
-*/
