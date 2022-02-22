@@ -1,5 +1,6 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
-import { LOCALHOST } from "@env";
+// @ts-ignore
+import { LOCALHOST } from "react-native-dotenv";
 
 export * from "./projects.service";
 export * from "./tasks.service";
