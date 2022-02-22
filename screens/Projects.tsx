@@ -1,31 +1,32 @@
-import React, { useEffect, useState } from "react";
-import { useQuery } from "@apollo/client";
+import React from "react";
+import { useApolloClient, useQuery } from "@apollo/client";
 import { GET_PROJECTS_QUERY } from "../services/index";
-import { Project } from "../models";
 import {
   commonStyles,
   BACKGROUND_COLOR_DARK,
   TEXT_COLOR_LIGHT,
-} from "../styles";
-
-import { Text, View, FlatList, TouchableOpacity } from "react-native";
+  INTERACTION_COLOR,
+  DARK_COLOR_DARKER,
+} from "../styles/index";
+import { ProjectListCard } from "../components";
+import { Text, View, FlatList } from "react-native";
 
 export const Projects = ({ navigation }: any) => {
-  const mockProjects: Project[] = [
-    {
-      id: "12",
-      name: "testProject1",
+  const cache = useApolloClient().cache;
+  const { data, loading, error } = useQuery(GET_PROJECTS_QUERY, {
+    onCompleted: (data: any) => {
+      const result = cache.readQuery<any, void>({ query: GET_PROJECTS_QUERY });
+      cache.writeQuery({
+          query: GET_PROJECTS_QUERY,
+          data: { findManyProjects: result?.findManyProjects }
+      });
     },
-    {
-      id: "13",
-      name: "testProject2",
-    },
-    {
-      id: "14",
-      name: "testProject3",
-    },
-  ];
-  const { data, loading, error } = useQuery(GET_PROJECTS_QUERY);
+    onError: (e: any) => { console.log(e) },
+  });
+
+  if (loading) return <Text> loading.. </Text>;
+
+  if (error) return <Text> {error?.message} </Text>;
 
   return (
     <>
@@ -33,47 +34,24 @@ export const Projects = ({ navigation }: any) => {
         style={[
           commonStyles.fullPage,
           {
-            alignItems: "center",
-            justifyContent: "space-around",
             backgroundColor: BACKGROUND_COLOR_DARK,
+            width: "100%",
           },
         ]}
       >
-        {loading && <Text>Loading</Text>}
-        {error && <Text>{error?.message}</Text>}
         <FlatList
-          contentContainerStyle={{ flex: 1, justifyContent: "space-around" }}
-          data={mockProjects}
-          keyExtractor={(mockProjects) => mockProjects.id}
-          renderItem={(itemData) => (
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("Project", {
-                  id: itemData.item.id,
-                })
-              }
-            >
-              <Text
-                style={{ fontSize: 30, marginTop: 7, color: TEXT_COLOR_LIGHT }}
-              >
-                {itemData.item.name}
-              </Text>
-            </TouchableOpacity>
-          )}
+          contentContainerStyle={{
+            marginTop: 20,
+            justifyContent: "space-around",
+            marginHorizontal: 20
+          }}
+          data={data.findManyProjects}
+          keyExtractor={(item) => item.id}
+          renderItem={(itemData) => <ProjectListCard  navigation={navigation} data={itemData.item} />}
         />
       </View>
     </>
   );
 };
 
-/* 
-gql`
-query Query {
-  findManyProjects {
-    id
-    name
-    description
-  }
-}
-`
-*/
+
