@@ -1,11 +1,16 @@
-import React, { useEffect } from 'react';
-import { FlatList, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import React, { useEffect } from "react";
+import {
+  FlatList,
+  Text,
+  TouchableOpacity,
+  View,
+  StyleSheet,
+} from "react-native";
 import * as colors from "../styles";
 
-
-export const ProjectListCard = ({ navigation, data}:any) => {
+export const ProjectListCard = ({ navigation, data }: any) => {
   console.log(data);
-  const users = [{name: "user1"}, {name: "user2"}];
+  const users = [{ name: "user1," }, { name: "user2," }, { name: "user3" }];
   return (
     <TouchableOpacity
       style={styles.card}
@@ -26,23 +31,33 @@ export const ProjectListCard = ({ navigation, data}:any) => {
           }}
         >
           {" " + data.name}
-        </Text >
+        </Text>
       </Text>
-      <Text style={{
+      <Text
+        style={{
           fontSize: 10,
           color: colors.INTERACTION_COLOR,
-        }}>
-          Description:
-        <Text style={{
+          marginTop: 12,
+        }}
+      >
+        Description:
+        <Text
+          style={{
             fontSize: 10,
             color: colors.TEXT_COLOR_LIGHT,
             marginLeft: 10,
-          }}>
-            {" " + data.description}
+          }}
+        >
+          {" " + data.description}
         </Text>
       </Text>
-      <Text>{data.id}</Text>
-      <View style={{ justifyContent: "center", alignItems: "center", marginTop: 5}}>
+      <View
+        style={{
+          justifyContent: "center",
+          alignItems: "flex-end",
+          marginTop: 15,
+        }}
+      >
         <View style={{ flexDirection: "row" }}>
           <View style={[styles.avatar, { marginLeft: 0 }]} />
           <View style={styles.avatar} />
@@ -55,35 +70,37 @@ export const ProjectListCard = ({ navigation, data}:any) => {
           data={users}
           keyExtractor={(user: any) => user.name}
           renderItem={(user: any) => (
-            <Text style={{ marginLeft: 3 }}>{user.name}</Text>
+            <Text style={{ marginLeft: 3, fontSize: 10 }}>
+              {user.item.name}
+            </Text>
           )}
         />
       </View>
     </TouchableOpacity>
   );
-}
+};
 
 const styles = StyleSheet.create({
-    card: {
-      flex: 1,
-      justifyContent: "space-between",
-      borderWidth: 1,
-      borderRadius: 3,
-      padding: 25,
-      width: "100%",
-      backgroundColor: colors.DARK_COLOR_DARKER,
-      shadowColor: colors.DARK_COLOR_DARKER,
-      shadowOffset: { width: 6, height: 6 },
-      shadowOpacity: 0.5,
-      shadowRadius: 3,
-      marginVertical: 5
-    },
-  
-    avatar: {
-      borderWidth: 1,
-      borderRadius: 50,
-      padding: 15,
-      marginLeft: 0,
-      backgroundColor: "gray",
-    },
-  });
+  card: {
+    flex: 1,
+    justifyContent: "space-between",
+    borderWidth: 1,
+    borderRadius: 3,
+    padding: 25,
+    width: "100%",
+    backgroundColor: colors.DARK_COLOR_DARKER,
+    shadowColor: colors.DARK_COLOR_DARKER,
+    shadowOffset: { width: 6, height: 6 },
+    shadowOpacity: 0.5,
+    shadowRadius: 3,
+    marginVertical: 6,
+  },
+
+  avatar: {
+    borderWidth: 1,
+    borderRadius: 50,
+    padding: 16,
+    marginLeft: -8,
+    backgroundColor: "gray",
+  },
+});
