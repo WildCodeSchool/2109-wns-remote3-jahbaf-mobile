@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { ScrollView, ScrollViewBase, StyleSheet } from "react-native";
-import { useQuery } from "@apollo/client";
+import React from "react";
+import { useApolloClient, useQuery } from "@apollo/client";
 import { GET_PROJECTS_QUERY } from "../services/index";
 import {
   commonStyles,
@@ -13,16 +12,21 @@ import { ProjectListCard } from "../components";
 import { Text, View, FlatList } from "react-native";
 
 export const Projects = ({ navigation }: any) => {
-  const { data, loading, error } = useQuery(GET_PROJECTS_QUERY);
+  const cache = useApolloClient().cache;
+  const { data, loading, error } = useQuery(GET_PROJECTS_QUERY, {
+    onCompleted: (data: any) => {
+      const result = cache.readQuery<any, void>({ query: GET_PROJECTS_QUERY });
+      cache.writeQuery({
+          query: GET_PROJECTS_QUERY,
+          data: { findManyProjects: result?.findManyProjects }
+      });
+    },
+    onError: (e: any) => { console.log(e) },
+  });
 
   if (loading) return <Text> loading.. </Text>;
 
   if (error) return <Text> {error?.message} </Text>;
-  const fictiveUsers = [
-    { name: "user1," },
-    { name: "user2," },
-    { name: "user3" },
-  ];
 
   return (
     <>

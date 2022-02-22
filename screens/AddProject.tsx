@@ -3,8 +3,8 @@ import { Pressable, SafeAreaView, View, Text, TextInput, StyleSheet } from "reac
 import * as colors from "../styles";
 import { ProjectInput } from "../models/project.models";
 
-import { CREATE_PROJECT_MUTATION } from "../services";
-import { useMutation } from "@apollo/client";
+import { CREATE_PROJECT_MUTATION, GET_PROJECTS_QUERY } from "../services";
+import { useApolloClient, useMutation } from "@apollo/client";
 
 const emptyProjectInfos: ProjectInput = {
   name: '',
@@ -12,9 +12,15 @@ const emptyProjectInfos: ProjectInput = {
 }
 
 export const AddProject = ({ navigation }: any) =>{
+  const cache = useApolloClient().cache;
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [isDone, setIsDone] = useState<boolean>();
   const [projectData, setProjectData] = useState<ProjectInput>(emptyProjectInfos);
+  /* 
+        onError: (e) => {
+            dispatch(displayNotification('error', 'Une erreur interne est survenue, veuillez réessayer.'));
+        }
+  */
   const [mutateProject, { loading, error, data }] = useMutation(CREATE_PROJECT_MUTATION, {
     variables: {
       projectInput: {
@@ -22,6 +28,14 @@ export const AddProject = ({ navigation }: any) =>{
         description: projectData.description,
       }
     },
+    onCompleted: (data: any) => {
+      const result = cache.readQuery<any, void>({ query: GET_PROJECTS_QUERY });
+      cache.writeQuery({
+          query: GET_PROJECTS_QUERY,
+          data: { findManyProjects: [...result?.findManyProjects, data.createProject] }
+      });
+    },
+    onError: (e: any) => { console.log(e) },
   });
   const validateNameAndDescription = () => {
     if (currentStep === 0) {
