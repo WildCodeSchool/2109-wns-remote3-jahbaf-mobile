@@ -4,7 +4,6 @@ import * as colors from "../styles";
 
 
 export const ProjectListCard = ({ navigation, data}:any) => {
-  console.log(data);
   const users = [{name: "user1"}, {name: "user2"}];
   return (
     <TouchableOpacity
