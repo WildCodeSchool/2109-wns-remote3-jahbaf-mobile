@@ -32,7 +32,7 @@ const LoginGuard = ({ onSelfEnd, setSelfLoading, children }: any) => {
 
   useEffect(() => {
     if (!loading) {
-      console.log('error ', error);
+      console.log('App useEffect', error);
       onSelfEnd(!error);
       setSelfLoading(false);
     }

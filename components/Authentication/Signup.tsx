@@ -24,7 +24,7 @@ export const Signup = ({onChange, onLogIn}: any) => {
         }
     });
     const onSubmit = async () => {
-        if (verify.signupInput(userInput)) {
+        // if (verify.signupInput(userInput)) {
             signUpSubmit({
                 variables: {
                     name: userInput.name,
@@ -32,7 +32,7 @@ export const Signup = ({onChange, onLogIn}: any) => {
                     password: userInput.password,
                 },
             });
-        }
+        // }
     }
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: colors.BACKGROUND_COLOR_DARK}}>

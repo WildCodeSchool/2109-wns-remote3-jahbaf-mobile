@@ -1,5 +1,5 @@
 import React from "react";
-import { SafeAreaView, View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Icon from "@expo/vector-icons/Ionicons";
 import { DARK_COLOR_DARKER, INTERACTION_COLOR, TEXT_COLOR_LIGHT,} from "../styles";
 import { Project as ProjectInterface } from "../models";

@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Pressable, SafeAreaView, View, Text, TextInput, StyleSheet } from "react-native";
+import React, { useEffect, useState, useRef } from "react";
+import { Animated, Pressable, SafeAreaView, View, Text, TextInput, StyleSheet, Dimensions } from "react-native";
 import * as colors from "../styles";
 import { ProjectInput } from "../models/project.models";
-
+import { ProgressBar } from "../components";
 import { CREATE_PROJECT_MUTATION, GET_PROJECTS_QUERY } from "../services";
 import { useApolloClient, useMutation } from "@apollo/client";
 
@@ -16,6 +16,9 @@ export const AddProject = ({ navigation }: any) =>{
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [isDone, setIsDone] = useState<boolean>();
   const [projectData, setProjectData] = useState<ProjectInput>(emptyProjectInfos);
+  const prevStepRef = useRef<number>(0);
+
+  const viewXOffset = useRef(new Animated.Value(Dimensions.get("window").height)).current;
   /* 
         onError: (e) => {
             dispatch(displayNotification('error', 'Une erreur interne est survenue, veuillez réessayer.'));
@@ -34,6 +37,8 @@ export const AddProject = ({ navigation }: any) =>{
           query: GET_PROJECTS_QUERY,
           data: { findManyProjects: [...result?.findManyProjects, data.createProject] }
       });
+      setCurrentStep(0);
+      setProjectData(emptyProjectInfos);
     },
     onError: (e: any) => { console.log(e) },
   });
@@ -45,13 +50,36 @@ export const AddProject = ({ navigation }: any) =>{
       } else return;
     }
     console.log("Name and description are valid");
-    setCurrentStep(currentStep + 1);
+    Animated.timing(viewXOffset, {
+      toValue: Dimensions.get("window").height,
+      duration: 1000,
+      useNativeDriver: true
+    }).start();
+    setTimeout(() => {
+      setCurrentStep(currentStep + 1);
+    }, 800)
   }
   const validateMembers = () => {
     console.log("Members Ok")
-    setCurrentStep(currentStep + 1);
+    Animated.timing(viewXOffset, {
+      toValue: Dimensions.get("window").height,
+      duration: 1000,
+      useNativeDriver: true
+    }).start();
+    setTimeout(() => {
+      setCurrentStep(currentStep + 1);
+    }, 800)
   }
-  
+  const previousPannel = () => {
+    Animated.timing(viewXOffset, {
+      toValue: Dimensions.get("window").height,
+      duration: 1000,
+      useNativeDriver: true
+    }).start();
+    setTimeout(() => {
+      setCurrentStep(currentStep - 1);
+    }, 800)
+  }
   useEffect(() => {
     if (!isDone) return;
     (async () => {
@@ -59,13 +87,21 @@ export const AddProject = ({ navigation }: any) =>{
       navigation.navigate('Project', { id: res.data.createProject.id });
     })();
   }, [isDone]);
+  useEffect(() => {
+    Animated.timing(viewXOffset, {
+      toValue: 0,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+    prevStepRef.current = currentStep;
+  }, [currentStep]);
   if (currentStep === 0) {
     return (
       <View style={{backgroundColor: colors.BACKGROUND_COLOR_DARK, flex: 1}}>
         <SafeAreaView>
           <Text style={styles.header}>Add new project</Text>
-          <View style={styles.projectCard}>
-            <Text style={styles.stepTitle}>Informations</Text>
+          <ProgressBar progress={currentStep} previous={prevStepRef.current}/>
+          <Animated.View style={[styles.projectCard, {transform: [{translateY: viewXOffset}]}]}>
             <Text style={styles.inputTitle}>Name</Text>
             <TextInput
               style={styles.inputName}
@@ -94,7 +130,7 @@ export const AddProject = ({ navigation }: any) =>{
                 <Text style={[styles.actionButtonText, projectData.name == "" ? {color: "#D7722F50"} : null]}>Next</Text>
               </Pressable>
             </View>
-          </View>
+          </Animated.View>
         </SafeAreaView>
       </View>
     );
@@ -103,14 +139,14 @@ export const AddProject = ({ navigation }: any) =>{
       <View style={{backgroundColor: colors.BACKGROUND_COLOR_DARK, flex: 1}}>
         <SafeAreaView>
           <Text style={styles.header}>Add new project</Text>
-          <View style={styles.projectCard}>
-            <Text style={styles.stepTitle}>Project members</Text>
+          <ProgressBar progress={currentStep} previous={prevStepRef.current}/>
+          <Animated.View style={[styles.projectCard, {transform: [{translateY: viewXOffset}]}]}>
             <View
               style={styles.actionContainer}
             >
               <Pressable
               style={styles.actionButton}
-              onPress={() => setCurrentStep(currentStep - 1)}
+              onPress={previousPannel}
               >
                 <Text style={styles.actionButtonText}>Previous</Text>
               </Pressable>
@@ -121,7 +157,7 @@ export const AddProject = ({ navigation }: any) =>{
                 <Text style={styles.actionButtonText}>Next</Text>
               </Pressable>
             </View>
-          </View>
+          </Animated.View>
         </SafeAreaView>
       </View>
     );
@@ -130,8 +166,8 @@ export const AddProject = ({ navigation }: any) =>{
       <View style={{backgroundColor: colors.BACKGROUND_COLOR_DARK, flex: 1}}>
         <SafeAreaView>
           <Text style={styles.header}>Add new project</Text>
-          <View style={styles.projectCard}>
-            <Text style={styles.stepTitle}>Project summary</Text>
+          <ProgressBar progress={currentStep} previous={prevStepRef.current}/>
+          <Animated.View style={[styles.projectCard, {transform: [{translateY: viewXOffset}]}]}>
             <Text style={styles.inputTitle}>Project name:<Text style={styles.inputName}> {projectData.name}</Text></Text>
             {projectData.description ? <Text style={[styles.inputTitle, {fontSize: 15}]}>Project description:<Text style={styles.inputName}> {projectData.description}</Text></Text> : null}
             {/* TEAM MEMBERS */}
@@ -140,7 +176,7 @@ export const AddProject = ({ navigation }: any) =>{
             >
               <Pressable
                 style={styles.actionButton}
-                onPress={() => setCurrentStep(currentStep - 1)}
+                onPress={previousPannel}
               >
                 <Text style={styles.actionButtonText}>Previous</Text>
               </Pressable>
@@ -151,7 +187,7 @@ export const AddProject = ({ navigation }: any) =>{
                 <Text style={styles.actionButtonText}>Save</Text>
               </Pressable>
             </View>
-          </View>
+          </Animated.View>
         </SafeAreaView>
       </View>
     );
