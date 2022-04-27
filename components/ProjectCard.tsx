@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Icon from "@expo/vector-icons/Ionicons";
 import {
@@ -8,28 +8,33 @@ import {
 } from "../styles";
 import { Project as ProjectInterface } from "../models";
 
-const footerBtns = [
-  {
-    name: "edit",
-    icon: "create",
-    function: () => {
-      console.log("edit");
-    },
-  },
-  {
-    name: "delete",
-    icon: "trash",
-    function: () => {
-      console.log("delete");
-    },
-  },
-];
-
 export const ProjectCard = ({ id, name, description }: ProjectInterface) => {
-  return (
+  const [isEditProjectMode, setIsEditProjectMode] = useState(false);
+  const footerBtns = [
+    {
+      name: "edit",
+      icon: "create",
+      function: () => {
+        console.log("edit");
+        setIsEditProjectMode(true);
+      },
+    },
+    {
+      name: "delete",
+      icon: "trash",
+      function: () => {
+        console.log("delete");
+      },
+    },
+  ];
+  return !isEditProjectMode ? (
     <View style={styles.projectCard}>
       <Text
-        style={{ fontSize: 30, color: INTERACTION_COLOR, textAlign: "center" }}
+        style={{
+          fontSize: 30,
+          color: INTERACTION_COLOR,
+          textAlign: "center",
+        }}
       >
         {name}
       </Text>
@@ -64,6 +69,8 @@ export const ProjectCard = ({ id, name, description }: ProjectInterface) => {
         ))}
       </View>
     </View>
+  ) : (
+    <Text>EDIT MODE</Text>
   );
 };
 

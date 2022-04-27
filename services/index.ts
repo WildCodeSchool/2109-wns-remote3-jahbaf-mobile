@@ -5,6 +5,7 @@ import {
   InMemoryCache,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+// @ts-ignore
 import { LOCALHOST } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 

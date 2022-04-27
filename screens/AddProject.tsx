@@ -8,6 +8,8 @@ import {
   TextInput,
   StyleSheet,
   Dimensions,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import * as colors from "../styles";
 import { ProjectInput } from "../models/project.models";
@@ -118,56 +120,63 @@ export const AddProject = ({ navigation }: any) => {
   }, [currentStep]);
   if (currentStep === 0) {
     return (
-      <View style={{ backgroundColor: colors.BACKGROUND_COLOR_DARK, flex: 1 }}>
-        <SafeAreaView>
-          <Text style={styles.header}>Add new project</Text>
-          <ProgressBar progress={currentStep} previous={prevStepRef.current} />
-          <Animated.View
-            style={[
-              styles.projectCard,
-              { transform: [{ translateY: viewXOffset }] },
-            ]}
-          >
-            <Text style={styles.inputTitle}>Name</Text>
-            <TextInput
-              style={styles.inputName}
-              placeholder="Project name"
-              placeholderTextColor={"#eeeeee50"}
-              onChangeText={(text: string) =>
-                setProjectData({ ...projectData, name: text })
-              }
-              value={projectData.name}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View
+          style={{ backgroundColor: colors.BACKGROUND_COLOR_DARK, flex: 1 }}
+        >
+          <SafeAreaView>
+            <Text style={styles.header}>Add new project</Text>
+            <ProgressBar
+              progress={currentStep}
+              previous={prevStepRef.current}
             />
-            <Text style={styles.inputTitle}>Description</Text>
-            <TextInput
-              style={styles.inputDescription}
-              placeholder="Project description"
-              placeholderTextColor={"#eeeeee50"}
-              onChangeText={(text: string) =>
-                setProjectData({ ...projectData, description: text })
-              }
-              value={projectData.description}
-              multiline={true}
-              numberOfLines={4}
-            />
-            <View style={styles.actionContainer}>
-              <Pressable
-                style={styles.actionButton}
-                onPress={validateNameAndDescription}
-              >
-                <Text
-                  style={[
-                    styles.actionButtonText,
-                    projectData.name == "" ? { color: "#D7722F50" } : null,
-                  ]}
+            <Animated.View
+              style={[
+                styles.projectCard,
+                { transform: [{ translateY: viewXOffset }] },
+              ]}
+            >
+              <Text style={styles.inputTitle}>Name</Text>
+              <TextInput
+                style={styles.inputName}
+                placeholder="Project name"
+                placeholderTextColor={"#eeeeee50"}
+                onChangeText={(text: string) =>
+                  setProjectData({ ...projectData, name: text })
+                }
+                value={projectData.name}
+              />
+              <Text style={styles.inputTitle}>Description</Text>
+              <TextInput
+                style={styles.inputDescription}
+                placeholder="Project description"
+                placeholderTextColor={"#eeeeee50"}
+                onChangeText={(text: string) =>
+                  setProjectData({ ...projectData, description: text })
+                }
+                value={projectData.description}
+                multiline={true}
+                numberOfLines={4}
+              />
+              <View style={styles.actionContainer}>
+                <Pressable
+                  style={styles.actionButton}
+                  onPress={validateNameAndDescription}
                 >
-                  Next
-                </Text>
-              </Pressable>
-            </View>
-          </Animated.View>
-        </SafeAreaView>
-      </View>
+                  <Text
+                    style={[
+                      styles.actionButtonText,
+                      projectData.name == "" ? { color: "#D7722F50" } : null,
+                    ]}
+                  >
+                    Next
+                  </Text>
+                </Pressable>
+              </View>
+            </Animated.View>
+          </SafeAreaView>
+        </View>
+      </TouchableWithoutFeedback>
     );
   } else if (currentStep === 1) {
     return (
