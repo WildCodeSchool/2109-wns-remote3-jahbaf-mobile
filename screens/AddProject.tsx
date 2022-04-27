@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Pressable, SafeAreaView, View, Text, TextInput, StyleSheet } from "react-native";
+import {
+  Pressable,
+  SafeAreaView,
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Keyboard,
+  TouchableWithoutFeedback,
+} from "react-native";
 import * as colors from "../styles";
 import { ProjectInput } from "../models/project.models";
 
@@ -7,104 +16,116 @@ import { CREATE_PROJECT_MUTATION, GET_PROJECTS_QUERY } from "../services";
 import { useApolloClient, useMutation } from "@apollo/client";
 
 const emptyProjectInfos: ProjectInput = {
-  name: '',
-  description: '',
-}
+  name: "",
+  description: "",
+};
 
-export const AddProject = ({ navigation }: any) =>{
+export const AddProject = ({ navigation }: any) => {
   const cache = useApolloClient().cache;
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [isDone, setIsDone] = useState<boolean>();
-  const [projectData, setProjectData] = useState<ProjectInput>(emptyProjectInfos);
+  const [projectData, setProjectData] =
+    useState<ProjectInput>(emptyProjectInfos);
   /* 
         onError: (e) => {
             dispatch(displayNotification('error', 'Une erreur interne est survenue, veuillez réessayer.'));
         }
   */
-  const [mutateProject, { loading, error, data }] = useMutation(CREATE_PROJECT_MUTATION, {
-    variables: {
-      projectInput: {
-        name: projectData.name,
-        description: projectData.description,
-      }
-    },
-    onCompleted: (data: any) => {
-      const result = cache.readQuery<any, void>({ query: GET_PROJECTS_QUERY });
-      cache.writeQuery({
+  const [mutateProject, { loading, error, data }] = useMutation(
+    CREATE_PROJECT_MUTATION,
+    {
+      variables: {
+        projectInput: {
+          name: projectData.name,
+          description: projectData.description,
+        },
+      },
+      onCompleted: (data: any) => {
+        const result = cache.readQuery<any, void>({
           query: GET_PROJECTS_QUERY,
-          data: { findManyProjects: [...result?.findManyProjects, data.createProject] }
-      });
-    },
-    onError: (e: any) => { console.log(e) },
-  });
+        });
+        cache.writeQuery({
+          query: GET_PROJECTS_QUERY,
+          data: {
+            findManyProjects: [...result?.findManyProjects, data.createProject],
+          },
+        });
+      },
+      onError: (e: any) => {
+        console.log(e);
+      },
+    }
+  );
   const validateNameAndDescription = () => {
     if (currentStep === 0) {
-      if (projectData.name) {} else return;
+      if (projectData.name) {
+      } else return;
     }
     console.log("Name and description are valid");
     setCurrentStep(currentStep + 1);
-  }
+  };
   const validateMembers = () => {
-    console.log("Members Ok")
+    console.log("Members Ok");
     setCurrentStep(currentStep + 1);
-  }
-  
+  };
+
   useEffect(() => {
     if (!isDone) return;
     (async () => {
-      let res = await mutateProject()
-      navigation.navigate('Project', { id: res.data.createProject.id });
+      let res = await mutateProject();
+      navigation.navigate("Project", { id: res.data.createProject.id });
     })();
   }, [isDone]);
   if (currentStep === 0) {
     return (
-      <View style={{backgroundColor: colors.BACKGROUND_COLOR_DARK, flex: 1}}>
-        <SafeAreaView>
-          <Text style={styles.header}>Add new project</Text>
-          <View style={styles.projectCard}>
-            <Text style={styles.stepTitle}>Informations</Text>
-            <Text style={styles.inputTitle}>Name</Text>
-            <TextInput
-              style={styles.inputName}
-              placeholder="Project name"
-              onChangeText={(text: string) => setProjectData({ ...projectData, name: text.trim() })}
-            />
-            <Text style={styles.inputTitle}>Description</Text>
-            <TextInput
-              style={styles.inputDescription}
-              placeholder="Project description"
-              onChangeText={(text: string) => setProjectData({ ...projectData, description: text.trim() })}
-              multiline = {true}
-              numberOfLines = {4}
-            />
-            <View
-              style={styles.nextContainer}
-            >
-              <Pressable
-                style={styles.nextButton}
-                onPress={validateNameAndDescription}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View
+          style={{ backgroundColor: colors.BACKGROUND_COLOR_DARK, flex: 1 }}
+        >
+          <SafeAreaView>
+            <Text style={styles.header}>Add new project</Text>
+            <View style={styles.projectCard}>
+              <Text style={styles.stepTitle}>Informations</Text>
+              <Text style={styles.inputTitle}>Name</Text>
+              <TextInput
+                style={styles.inputName}
+                placeholder="Project name"
+                onChangeText={(text: string) =>
+                  setProjectData({ ...projectData, name: text.trim() })
+                }
+              />
+              <Text style={styles.inputTitle}>Description</Text>
+              <TextInput
+                style={styles.inputDescription}
+                placeholder="Project description"
+                onChangeText={(text: string) =>
+                  setProjectData({ ...projectData, description: text.trim() })
+                }
+                multiline={true}
+                numberOfLines={4}
+              />
+              <View style={styles.nextContainer}>
+                <Pressable
+                  style={styles.nextButton}
+                  onPress={validateNameAndDescription}
                 >
-                <Text style={styles.nextButtonText}>Next</Text>
-              </Pressable>
+                  <Text style={styles.nextButtonText}>Next</Text>
+                </Pressable>
+              </View>
             </View>
-          </View>
-        </SafeAreaView>
-      </View>
+          </SafeAreaView>
+        </View>
+      </TouchableWithoutFeedback>
     );
   } else if (currentStep === 1) {
     return (
-      <View style={{backgroundColor: colors.BACKGROUND_COLOR_DARK, flex: 1}}>
+      <View style={{ backgroundColor: colors.BACKGROUND_COLOR_DARK, flex: 1 }}>
         <SafeAreaView>
           <Text style={styles.header}>Add new project</Text>
           <View style={styles.projectCard}>
             <Text style={styles.stepTitle}>Project members</Text>
-            <View
-              style={styles.nextContainer}
-            >
-              <Pressable
-                style={styles.nextButton}
-                onPress={validateMembers}
-              >
+            <View style={styles.nextContainer}>
+              <Pressable style={styles.nextButton} onPress={validateMembers}>
                 <Text style={styles.nextButtonText}>Next</Text>
               </Pressable>
             </View>
@@ -114,7 +135,7 @@ export const AddProject = ({ navigation }: any) =>{
     );
   } else {
     return (
-      <View style={{backgroundColor: colors.BACKGROUND_COLOR_DARK, flex: 1}}>
+      <View style={{ backgroundColor: colors.BACKGROUND_COLOR_DARK, flex: 1 }}>
         <SafeAreaView>
           <Text style={styles.header}>Add new project</Text>
           <View style={styles.projectCard}>
@@ -123,13 +144,11 @@ export const AddProject = ({ navigation }: any) =>{
             <Text>{projectData.name}</Text>
             <Text>Project description:</Text>
             <Text>{projectData.description}</Text>
-            <View
-              style={styles.nextContainer}
-            >
+            <View style={styles.nextContainer}>
               <Pressable
                 style={styles.nextButton}
                 onPress={() => setIsDone(true)}
-                >
+              >
                 <Text style={styles.nextButtonText}>Next</Text>
               </Pressable>
             </View>
@@ -138,7 +157,6 @@ export const AddProject = ({ navigation }: any) =>{
       </View>
     );
   }
-  
 };
 
 const styles = StyleSheet.create({
@@ -159,7 +177,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginVertical: 10,
     color: colors.TEXT_COLOR_LIGHT,
-
   },
   inputTitle: {
     fontSize: 15,
@@ -191,5 +208,5 @@ const styles = StyleSheet.create({
   },
   nextButtonText: {
     color: colors.TEXT_COLOR_LIGHT,
-  }
-})
+  },
+});
