@@ -1,12 +1,11 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Icon from "@expo/vector-icons/Ionicons";
-
 import {
   DARK_COLOR_DARKER,
   INTERACTION_COLOR,
   TEXT_COLOR_LIGHT,
-} from "../styles/index";
+} from "../styles";
 import { Project as ProjectInterface } from "../models";
 
 const footerBtns = [
@@ -50,9 +49,8 @@ export const ProjectCard = ({ id, name, description }: ProjectInterface) => {
           marginTop: 40,
         }}
       >
-        {footerBtns.map((btn, i) => (
+        {footerBtns.map((btn) => (
           <TouchableOpacity
-            key={i}
             style={{
               borderRadius: 10,
               padding: 5,
@@ -71,13 +69,14 @@ export const ProjectCard = ({ id, name, description }: ProjectInterface) => {
 
 const styles = StyleSheet.create({
   projectCard: {
+    alignSelf: "center",
     marginTop: 15,
     justifyContent: "center",
     borderWidth: 1,
     borderRadius: 3,
     padding: 25,
-    width: "96%",
-    alignSelf: "center",
+    width: "90%",
+    marginHorizontal: 10,
     backgroundColor: DARK_COLOR_DARKER,
     shadowColor: DARK_COLOR_DARKER,
     shadowOffset: { width: 6, height: 6 },

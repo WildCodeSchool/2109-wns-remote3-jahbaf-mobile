@@ -10,7 +10,6 @@ export const Project = ({ route }: any) => {
     variables: { id: route.params.id },
   });
   if (error) console.log(error);
-  if (data) console.log(data.findProjectById);
   return (
     <View style={{ backgroundColor: BACKGROUND_COLOR_DARK, flex: 1 }}>
       {error && <Text>ERROR</Text>}
