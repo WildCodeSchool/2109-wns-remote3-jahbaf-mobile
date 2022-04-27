@@ -50,8 +50,9 @@ export const ProjectCard = ({ id, name, description }: ProjectInterface) => {
           marginTop: 40,
         }}
       >
-        {footerBtns.map((btn) => (
+        {footerBtns.map((btn, i) => (
           <TouchableOpacity
+            key={i}
             style={{
               borderRadius: 10,
               padding: 5,
