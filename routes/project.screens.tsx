@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Projects, Project, AddProject } from "../screens";
 
@@ -8,7 +8,7 @@ export const ProjectsScreens = () => {
   return (
     <Stack.Navigator screenOptions={{ headerTitleAlign: "center" }}>
       <Stack.Screen
-        name="Projects"
+        name="ProjectsList"
         component={Projects}
         options={{ title: "Projects" }}
       />
@@ -30,5 +30,5 @@ export const AddProjectScreens = () => {
         options={{ title: "Projects" }}
       />
     </Stack.Navigator>
-  )
-}
+  );
+};

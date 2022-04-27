@@ -45,6 +45,7 @@ export const AddProject = ({ navigation }: any) => {
         projectInput: {
           name: projectData.name,
           description: projectData.description,
+          roleId: 1,
         },
       },
       onCompleted: (data: any) => {
