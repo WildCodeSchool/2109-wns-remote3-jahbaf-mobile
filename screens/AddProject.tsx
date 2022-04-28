@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Pressable, SafeAreaView, View, Text, TextInput, StyleSheet } from "react-native";
+import React, { useEffect, useState, useRef } from "react";
+import { Animated, Pressable, SafeAreaView, View, Text, TextInput, StyleSheet, Dimensions } from "react-native";
 import * as colors from "../styles";
 import { ProjectInput } from "../models/project.models";
-
+import { ProgressBar } from "../components";
 import { CREATE_PROJECT_MUTATION, GET_PROJECTS_QUERY } from "../services";
 import { useApolloClient, useMutation } from "@apollo/client";
 
@@ -17,6 +17,9 @@ export const AddProject = ({ navigation }: any) =>{
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [isDone, setIsDone] = useState<boolean>();
   const [projectData, setProjectData] = useState<ProjectInput>(emptyProjectInfos);
+  const prevStepRef = useRef<number>(0);
+
+  const viewXOffset = useRef(new Animated.Value(Dimensions.get("window").height)).current;
   /* 
         onError: (e) => {
             dispatch(displayNotification('error', 'Une erreur interne est survenue, veuillez réessayer.'));
@@ -36,21 +39,49 @@ export const AddProject = ({ navigation }: any) =>{
           query: GET_PROJECTS_QUERY,
           data: { findManyProjects: [...result?.findManyProjects, data.createProject] }
       });
+      setCurrentStep(0);
+      setProjectData(emptyProjectInfos);
     },
     onError: (e: any) => { console.log(e) },
   });
   const validateNameAndDescription = () => {
     if (currentStep === 0) {
-      if (projectData.name) {} else return;
+      if (projectData.name) {
+        projectData.name = projectData.name.trim();
+        projectData.description = projectData.description?.trim();
+      } else return;
     }
     console.log("Name and description are valid");
-    setCurrentStep(currentStep + 1);
+    Animated.timing(viewXOffset, {
+      toValue: Dimensions.get("window").height,
+      duration: 1000,
+      useNativeDriver: true
+    }).start();
+    setTimeout(() => {
+      setCurrentStep(currentStep + 1);
+    }, 800)
   }
   const validateMembers = () => {
     console.log("Members Ok")
-    setCurrentStep(currentStep + 1);
+    Animated.timing(viewXOffset, {
+      toValue: Dimensions.get("window").height,
+      duration: 1000,
+      useNativeDriver: true
+    }).start();
+    setTimeout(() => {
+      setCurrentStep(currentStep + 1);
+    }, 800)
   }
-  
+  const previousPannel = () => {
+    Animated.timing(viewXOffset, {
+      toValue: Dimensions.get("window").height,
+      duration: 1000,
+      useNativeDriver: true
+    }).start();
+    setTimeout(() => {
+      setCurrentStep(currentStep - 1);
+    }, 800)
+  }
   useEffect(() => {
     if (!isDone) return;
     (async () => {
@@ -58,18 +89,28 @@ export const AddProject = ({ navigation }: any) =>{
       navigation.navigate('Project', { id: res.data.createProject.id });
     })();
   }, [isDone]);
+  useEffect(() => {
+    Animated.timing(viewXOffset, {
+      toValue: 0,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+    prevStepRef.current = currentStep;
+  }, [currentStep]);
   if (currentStep === 0) {
     return (
       <View style={{backgroundColor: colors.BACKGROUND_COLOR_DARK, flex: 1}}>
         <SafeAreaView>
           <Text style={styles.header}>Add new project</Text>
-          <View style={styles.projectCard}>
-            <Text style={styles.stepTitle}>Informations</Text>
+          <ProgressBar progress={currentStep} previous={prevStepRef.current}/>
+          <Animated.View style={[styles.projectCard, {transform: [{translateY: viewXOffset}]}]}>
             <Text style={styles.inputTitle}>Name</Text>
             <TextInput
               style={styles.inputName}
               placeholder="Project name"
-              onChangeText={(text: string) => setProjectData({ ...projectData, name: text.trim() })}
+              placeholderTextColor={"#eeeeee50"}
+              onChangeText={(text: string) => setProjectData({ ...projectData, name: text })}
+              value={projectData.name}
             />
             <Text style={styles.inputTitle}>Role on project</Text>
             <TextInput
@@ -81,21 +122,23 @@ export const AddProject = ({ navigation }: any) =>{
             <TextInput
               style={styles.inputDescription}
               placeholder="Project description"
-              onChangeText={(text: string) => setProjectData({ ...projectData, description: text.trim() })}
+              placeholderTextColor={"#eeeeee50"}
+              onChangeText={(text: string) => setProjectData({ ...projectData, description: text })}
+              value={projectData.description}
               multiline = {true}
               numberOfLines = {4}
             />
             <View
-              style={styles.nextContainer}
+              style={styles.actionContainer}
             >
               <Pressable
-                style={styles.nextButton}
+                style={styles.actionButton}
                 onPress={validateNameAndDescription}
                 >
-                <Text style={styles.nextButtonText}>Next</Text>
+                <Text style={[styles.actionButtonText, projectData.name == "" ? {color: "#D7722F50"} : null]}>Next</Text>
               </Pressable>
             </View>
-          </View>
+          </Animated.View>
         </SafeAreaView>
       </View>
     );
@@ -104,19 +147,25 @@ export const AddProject = ({ navigation }: any) =>{
       <View style={{backgroundColor: colors.BACKGROUND_COLOR_DARK, flex: 1}}>
         <SafeAreaView>
           <Text style={styles.header}>Add new project</Text>
-          <View style={styles.projectCard}>
-            <Text style={styles.stepTitle}>Project members</Text>
+          <ProgressBar progress={currentStep} previous={prevStepRef.current}/>
+          <Animated.View style={[styles.projectCard, {transform: [{translateY: viewXOffset}]}]}>
             <View
-              style={styles.nextContainer}
+              style={styles.actionContainer}
             >
               <Pressable
-                style={styles.nextButton}
+              style={styles.actionButton}
+              onPress={previousPannel}
+              >
+                <Text style={styles.actionButtonText}>Previous</Text>
+              </Pressable>
+              <Pressable
+                style={styles.actionButton}
                 onPress={validateMembers}
               >
-                <Text style={styles.nextButtonText}>Next</Text>
+                <Text style={styles.actionButtonText}>Next</Text>
               </Pressable>
             </View>
-          </View>
+          </Animated.View>
         </SafeAreaView>
       </View>
     );
@@ -125,23 +174,28 @@ export const AddProject = ({ navigation }: any) =>{
       <View style={{backgroundColor: colors.BACKGROUND_COLOR_DARK, flex: 1}}>
         <SafeAreaView>
           <Text style={styles.header}>Add new project</Text>
-          <View style={styles.projectCard}>
-            <Text style={styles.stepTitle}>Project Summary</Text>
-            <Text>Project name:</Text>
-            <Text>{projectData.name}</Text>
-            <Text>Project description:</Text>
-            <Text>{projectData.description}</Text>
+          <ProgressBar progress={currentStep} previous={prevStepRef.current}/>
+          <Animated.View style={[styles.projectCard, {transform: [{translateY: viewXOffset}]}]}>
+            <Text style={styles.inputTitle}>Project name:<Text style={styles.inputName}> {projectData.name}</Text></Text>
+            {projectData.description ? <Text style={[styles.inputTitle, {fontSize: 15}]}>Project description:<Text style={styles.inputName}> {projectData.description}</Text></Text> : null}
+            {/* TEAM MEMBERS */}
             <View
-              style={styles.nextContainer}
+              style={styles.actionContainer}
             >
               <Pressable
-                style={styles.nextButton}
+                style={styles.actionButton}
+                onPress={previousPannel}
+              >
+                <Text style={styles.actionButtonText}>Previous</Text>
+              </Pressable>
+              <Pressable
+                style={styles.actionButton}
                 onPress={() => setIsDone(true)}
                 >
-                <Text style={styles.nextButtonText}>Next</Text>
+                <Text style={styles.actionButtonText}>Save</Text>
               </Pressable>
             </View>
-          </View>
+          </Animated.View>
         </SafeAreaView>
       </View>
     );
@@ -154,42 +208,54 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 30,
     marginVertical: 20,
-    color: colors.TEXT_COLOR_LIGHT,
+    color: colors.INTERACTION_COLOR,
   },
   projectCard: {
-    marginHorizontal: 15,
-    borderWidth: 2,
-    borderColor: "black",
-    borderStyle: "solid",
+    borderWidth: 1,
+    borderRadius: 3,
+    marginHorizontal: 10,
+    padding: 15,
+    backgroundColor: colors.DARK_COLOR_DARKER,
+    shadowColor: colors.DARK_COLOR_DARKER,
+    shadowOffset: { width: 6, height: 6 },
+    shadowOpacity: 0.5,
+    shadowRadius: 3,
+    marginVertical: 5,
   },
   stepTitle: {
-    fontSize: 20,
+    fontSize: 25,
     textAlign: "center",
     marginVertical: 10,
-    color: colors.TEXT_COLOR_LIGHT,
-
+    color: colors.INTERACTION_COLOR,
   },
   inputTitle: {
-    fontSize: 15,
+    fontSize: 20,
     marginLeft: 10,
-    color: colors.TEXT_COLOR_LIGHT,
+    color: colors.INTERACTION_COLOR,
   },
   inputName: {
     height: 40,
     margin: 12,
     borderWidth: 1,
+    borderRadius: 15,
     padding: 10,
+    color: colors.TEXT_COLOR_LIGHT
   },
   inputDescription: {
     height: 120,
     margin: 12,
     borderWidth: 1,
+    borderRadius: 15,
     padding: 10,
+    color: colors.TEXT_COLOR_LIGHT,
   },
-  nextContainer: {
+  actionContainer: {
     alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-evenly",
   },
-  nextButton: {
+  actionButton: {
+    width: 120,
     marginVertical: 10,
     borderColor: "black",
     borderWidth: 1,
@@ -197,7 +263,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
   },
-  nextButtonText: {
-    color: colors.TEXT_COLOR_LIGHT,
-  }
+  actionButtonText: {
+    textAlign: 'center',
+    fontSize: 20,
+    color: colors.INTERACTION_COLOR,
+  },
+  
 })

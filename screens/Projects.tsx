@@ -43,9 +43,7 @@ export const Projects = ({ navigation }: any) => {
           }}
           data={data.findManyProjects}
           keyExtractor={(item) => item.id}
-          renderItem={(itemData) => (
-            <ProjectListCard navigation={navigation} data={itemData.item} />
-          )}
+          renderItem={(itemData) => <ProjectListCard  navigation={navigation} data={itemData.item} key={itemData.item.id} />}
         />
       </View>
     </>

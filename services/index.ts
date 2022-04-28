@@ -1,11 +1,30 @@
-import { ApolloClient, InMemoryCache } from "@apollo/client";
-// @ts-ignore
-import { LOCALHOST } from "react-native-dotenv";
+import { ApolloClient, ApolloLink, createHttpLink, InMemoryCache } from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
+import { LOCALHOST } from "@env";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export * from "./projects.service";
 export * from "./tasks.service";
+export * from "./auth.service";
+
+const authMiddleware = setContext(async (operation) =>{
+  const token = await AsyncStorage.getItem("session_ID");
+  return {
+    headers: {
+      authorization: token || null,
+    },
+  };
+});
+
+const authLink = ApolloLink.from([
+  authMiddleware
+]);
+
+const link = createHttpLink({
+  uri: `http://${LOCALHOST}:4004/graphql`
+});
 
 export const client = new ApolloClient({
-  uri: `http://${LOCALHOST}:4004/graphql`,
-  cache: new InMemoryCache(),
+  link: authLink.concat(link),
+  cache: new InMemoryCache()
 });
