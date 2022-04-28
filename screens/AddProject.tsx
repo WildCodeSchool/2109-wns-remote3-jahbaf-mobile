@@ -9,6 +9,7 @@ import { useApolloClient, useMutation } from "@apollo/client";
 const emptyProjectInfos: ProjectInput = {
   name: '',
   description: '',
+  role: ''
 }
 
 export const AddProject = ({ navigation }: any) =>{
@@ -24,7 +25,8 @@ export const AddProject = ({ navigation }: any) =>{
   const [mutateProject, { loading, error, data }] = useMutation(CREATE_PROJECT_MUTATION, {
     variables: {
       projectInput: {
-        name: projectData.name,
+        projectName: projectData.name,
+        roleName: projectData.role,
         description: projectData.description,
       }
     },
@@ -68,6 +70,12 @@ export const AddProject = ({ navigation }: any) =>{
               style={styles.inputName}
               placeholder="Project name"
               onChangeText={(text: string) => setProjectData({ ...projectData, name: text.trim() })}
+            />
+            <Text style={styles.inputTitle}>Role on project</Text>
+            <TextInput
+              style={styles.inputName}
+              placeholder="Project role"
+              onChangeText={(text: string) => setProjectData({ ...projectData, role: text.trim() })}
             />
             <Text style={styles.inputTitle}>Description</Text>
             <TextInput
