@@ -1,13 +1,7 @@
 import React from "react";
 import { useApolloClient, useQuery } from "@apollo/client";
 import { GET_PROJECTS_QUERY } from "../services/index";
-import {
-  commonStyles,
-  BACKGROUND_COLOR_DARK,
-  TEXT_COLOR_LIGHT,
-  INTERACTION_COLOR,
-  DARK_COLOR_DARKER,
-} from "../styles/index";
+import { commonStyles, BACKGROUND_COLOR_DARK } from "../styles/index";
 import { ProjectListCard } from "../components";
 import { Text, View, FlatList } from "react-native";
 
@@ -17,11 +11,13 @@ export const Projects = ({ navigation }: any) => {
     onCompleted: (data: any) => {
       const result = cache.readQuery<any, void>({ query: GET_PROJECTS_QUERY });
       cache.writeQuery({
-          query: GET_PROJECTS_QUERY,
-          data: { findManyProjects: result?.findManyProjects }
+        query: GET_PROJECTS_QUERY,
+        data: { findManyProjects: result?.findManyProjects },
       });
     },
-    onError: (e: any) => { console.log(e) },
+    onError: (e: any) => {
+      console.log(e);
+    },
   });
 
   if (loading) return <Text> loading.. </Text>;
@@ -43,7 +39,7 @@ export const Projects = ({ navigation }: any) => {
           contentContainerStyle={{
             marginTop: 20,
             justifyContent: "space-around",
-            marginHorizontal: 20
+            marginHorizontal: 20,
           }}
           data={data.findManyProjects}
           keyExtractor={(item) => item.id}
@@ -53,5 +49,3 @@ export const Projects = ({ navigation }: any) => {
     </>
   );
 };
-
-

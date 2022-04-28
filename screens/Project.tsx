@@ -5,8 +5,10 @@ import { FIND_ONE_PROJECT_BY_ID } from "../services";
 import { ProjectCard } from "../components";
 import { BACKGROUND_COLOR_DARK } from "../styles";
 
-export const Project = ({route}: any) => {
-  const { loading, error, data } = useQuery(FIND_ONE_PROJECT_BY_ID, {variables: { id: route.params.id }});
+export const Project = ({ route }: any) => {
+  const { loading, error, data } = useQuery(FIND_ONE_PROJECT_BY_ID, {
+    variables: { id: route.params.id },
+  });
   if (error) console.log(error);
   return (
     <View style={{ backgroundColor: BACKGROUND_COLOR_DARK, flex: 1 }}>
