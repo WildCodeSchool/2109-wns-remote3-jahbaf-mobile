@@ -1,6 +1,7 @@
 export interface ProjectInput {
     name: string,
     description?: string,
+    role: string
 };
 
 export interface Project {

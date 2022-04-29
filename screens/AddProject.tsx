@@ -20,6 +20,7 @@ import { useApolloClient, useMutation } from "@apollo/client";
 const emptyProjectInfos: ProjectInput = {
   name: "",
   description: "",
+  role: "",
 };
 
 export const AddProject = ({ navigation }: any) => {
@@ -137,28 +138,48 @@ export const AddProject = ({ navigation }: any) => {
                 { transform: [{ translateY: viewXOffset }] },
               ]}
             >
-              <Text style={styles.inputTitle}>Name</Text>
+              <Text style={styles.inputTitle}>Role on project</Text>
               <TextInput
                 style={styles.inputName}
-                placeholder="Project name"
-                placeholderTextColor={"#eeeeee50"}
+                placeholder="Project role"
                 onChangeText={(text: string) =>
-                  setProjectData({ ...projectData, name: text })
+                  setProjectData({ ...projectData, role: text.trim() })
                 }
-                value={projectData.name}
               />
               <Text style={styles.inputTitle}>Description</Text>
               <TextInput
                 style={styles.inputDescription}
                 placeholder="Project description"
-                placeholderTextColor={"#eeeeee50"}
                 onChangeText={(text: string) =>
-                  setProjectData({ ...projectData, description: text })
+                  setProjectData({ ...projectData, description: text.trim() })
                 }
-                value={projectData.description}
                 multiline={true}
                 numberOfLines={4}
               />
+              <View style={styles.nextContainer}>
+                <Text style={styles.inputTitle}>Name</Text>
+                <TextInput
+                  style={styles.inputName}
+                  placeholder="Project name"
+                  placeholderTextColor={"#eeeeee50"}
+                  onChangeText={(text: string) =>
+                    setProjectData({ ...projectData, name: text })
+                  }
+                  value={projectData.name}
+                />
+                <Text style={styles.inputTitle}>Description</Text>
+                <TextInput
+                  style={styles.inputDescription}
+                  placeholder="Project description"
+                  placeholderTextColor={"#eeeeee50"}
+                  onChangeText={(text: string) =>
+                    setProjectData({ ...projectData, description: text })
+                  }
+                  value={projectData.description}
+                  multiline={true}
+                  numberOfLines={4}
+                />
+              </View>
               <View style={styles.actionContainer}>
                 <Pressable
                   style={styles.actionButton}
@@ -250,6 +271,9 @@ const styles = StyleSheet.create({
     fontSize: 30,
     marginVertical: 20,
     color: colors.INTERACTION_COLOR,
+  },
+  nextContainer: {
+    alignItems: "center",
   },
   projectCard: {
     borderWidth: 1,

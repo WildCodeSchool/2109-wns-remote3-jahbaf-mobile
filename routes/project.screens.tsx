@@ -25,7 +25,7 @@ export const AddProjectScreens = () => {
   return (
     <Stack.Navigator screenOptions={{ headerTitleAlign: "center" }}>
       <Stack.Screen
-        name="AddProject"
+        name="CreateProject"
         component={AddProject}
         options={{ title: "Projects" }}
       />
